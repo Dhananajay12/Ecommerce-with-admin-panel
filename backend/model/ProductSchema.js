@@ -1,30 +1,33 @@
 const mongoose = require("mongoose");
 
-const ProductSchema = mongoose.Schema({
+const productSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "plese enter a name of a product"],
+    required: [true, "Please enter a name of a product"],
     trim: true,
-    maxLength: [15, "Product name not exceed 20  characters"],
+    maxLength: [20, "Product name not exceed than 20 characters"],
   },
   description: {
     type: String,
-    required: [true, "plese add a description of your product"],
-    maxLength: [4000, "Description is can not exceed than 4000 characters"],
+    required: [true, "Please add a description of your product"],
+    maxlength: [4000, "Description is can not exceed than 4000 characters"],
   },
   price: {
     type: Number,
     required: [true, "Please add a price for your product"],
-    maxLength: [8, "price can not exceed than 8 characters"],
+    maxLength: [8, "Price can not exceed than 8 characters"],
   },
-  discountPrice: {
+  offerPrice: {
     type: String,
-    maxLength: [4, "Discount"],
+    maxLength: [4, "Discount price can not exceed than 4 characters"],
+  },
+  color: {
+    type: String,
   },
   size: {
     type: String,
   },
-  rating: {
+  ratings: {
     type: Number,
     default: 0,
   },
@@ -42,18 +45,18 @@ const ProductSchema = mongoose.Schema({
   ],
   category: {
     type: String,
-    required: [true, "Please add  a category of your product"],
+    required: [true, "Please add a category of your product"],
   },
-  stock: {
+  Stock: {
     type: Number,
-    required: [true, "Please  add some stock for your product"],
-    maxLength: [3, "Stock cannot be exceed 3 characters"],
+    required: [true, "Please add some stoke for your product"],
+    maxLength: [3, "Stock can not exceed than 3 characters"],
   },
-
   numOfReviews: {
     type: Number,
     default: 0,
   },
+
   reviews: [
     {
       user: {
@@ -81,7 +84,7 @@ const ProductSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
-    required: true,
+    //   required: true
   },
   createAt: {
     type: Date,
@@ -89,6 +92,4 @@ const ProductSchema = mongoose.Schema({
   },
 });
 
-const Product = mongoose.model("Product", ProductSchema);
-
-module.exports = Product;
+module.exports = mongoose.model("Product", productSchema);
