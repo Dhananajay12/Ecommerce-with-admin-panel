@@ -1,4 +1,5 @@
 const Product = require("../model/ProductSchema");
+const ErrorHandler = require("../utils/ErrorHandle");
 
 const createProduct = async (req, res, next) => {
   const product = await Product.create(req.body);
@@ -17,13 +18,11 @@ const getAllProducts = async (req, res) => {
   });
 };
 
-const updateProduct = async (req, res) => {
+const updateProduct = async (req, res, next) => {
   let product = await Product.findById(req.params.id);
+
   if (!product) {
-    res.status(500).json({
-      success: false,
-      message: "product not fouund with  this id",
-    });
+    return next(new ErrorHandler("product not found with this id ", 404));
   }
 
   product = await Product.findByIdAndUpdate(req.params.id, req.body, {
@@ -37,13 +36,10 @@ const updateProduct = async (req, res) => {
   });
 };
 
-const deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res, next) => {
   let product = await Product.findById(req.params.id);
   if (!product) {
-    res.status(500).json({
-      success: false,
-      message: "product not fouund with  this id",
-    });
+    return next(new ErrorHandler("product not found with this id ", 404));
   }
   await Product.deleteOne();
 
@@ -53,15 +49,11 @@ const deleteProduct = async (req, res) => {
   });
 };
 
-const getSingleProduct = async (req, res) => {
+const getSingleProduct = async (req, res, next) => {
   let product = await Product.findById(req.params.id);
   if (!product) {
-    res.status(500).json({
-      success: false,
-      message: "product not fouund with  this id",
-    });
+    return next(new ErrorHandler("product not found", 404));
   }
-
   res.status(200).json({
     success: true,
     product,
