@@ -9,9 +9,11 @@ const createProduct = async (req, res, next) => {
   });
 };
 
-const getAllProducts = (req, res) => {
+const getAllProducts = async (req, res) => {
+  const product = await Product.find();
   res.status(200).json({
-    message: "Route is working fine",
+    success: true,
+    product,
   });
 };
 
