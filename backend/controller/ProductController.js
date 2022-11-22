@@ -17,7 +17,61 @@ const getAllProducts = async (req, res) => {
   });
 };
 
+const updateProduct = async (req, res) => {
+  let product = await Product.findById(req.params.id);
+  if (!product) {
+    res.status(500).json({
+      success: false,
+      message: "product not fouund with  this id",
+    });
+  }
+
+  product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+    useUnfied: false,
+  });
+  res.status(200).json({
+    success: true,
+    product,
+  });
+};
+
+const deleteProduct = async (req, res) => {
+  let product = await Product.findById(req.params.id);
+  if (!product) {
+    res.status(500).json({
+      success: false,
+      message: "product not fouund with  this id",
+    });
+  }
+  await Product.deleteOne();
+
+  res.status(200).json({
+    success: true,
+    message: "product delete successfully",
+  });
+};
+
+const getSingleProduct = async (req, res) => {
+  let product = await Product.findById(req.params.id);
+  if (!product) {
+    res.status(500).json({
+      success: false,
+      message: "product not fouund with  this id",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    product,
+  });
+};
+
 module.exports = {
   getAllProducts,
   createProduct,
+  updateProduct,
+  deleteProduct,
+  getSingleProduct,
 };
