@@ -4,6 +4,7 @@ const User = require("../model/UserModel");
 const ErrorHandler = require("../utils/ErrorHandle");
 const sendToken = require("../utils/jwtToken");
 const sendMail = require("../utils/sendMail");
+const crypto = require("crypto");
 
 const createUser = AsyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -101,10 +102,77 @@ const forgotPassword = AsyncHandler(async (req, res, next) => {
     return next(new ErrorHandler(error.message, 500));
   }
 });
+// Reset Password
+const resetPassword = AsyncHandler(async (req, res, next) => {
+  // Create Token hash
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordTime: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(
+      new ErrorHandler("Reset password url is invalid or has been expired", 400)
+    );
+  }
+
+  if (req.body.password !== req.body.confirmPassword) {
+    return next(
+      new ErrorHandler("Password is not matched with the new password", 400)
+    );
+  }
+
+  user.password = req.body.password;
+
+  user.resetPasswordToken = undefined;
+  user.resetPasswordTime = undefined;
+
+  await user.save();
+
+  sendToken(user, 200, res);
+});
+
+//  Get user Details
+// exports.userDetails = catchAsyncErrors(async (req, res, next) => {
+//   const user = await User.findById(req.user.id);
+
+//   res.status(200).json({
+//     success: true,
+//     user,
+//   });
+// });
+
+// Update User Password
+const updatePassword = AsyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select("+password");
+
+  const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
+
+  if (!isPasswordMatched) {
+    return next(new ErrorHandler("Old Password is incorrect", 400));
+  }
+
+  if (req.body.newPassword !== req.body.confirmPassword) {
+    return next(new ErrorHandler("Password not matched with each other", 400));
+  }
+
+  user.password = req.body.newPassword;
+
+  await user.save();
+
+  sendToken(user, 200, res);
+});
 
 module.exports = {
   createUser,
   loginUser,
   logoutUser,
   forgotPassword,
+  updatePassword,
+  resetPassword,
 };
