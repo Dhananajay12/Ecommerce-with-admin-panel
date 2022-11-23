@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const crypto = require("crypto");
+const crypto = require("crypto");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -74,19 +74,19 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 };
 
 // Forgot password
-// userSchema.methods.getResetToken = function () {
-//   Generating token
-//   const resetToken = crypto.randomBytes(20).toString("hex");
+userSchema.methods.getResetToken = function () {
+  //   Generating token
+  const resetToken = crypto.randomBytes(20).toString("hex");
 
-//      hashing and adding resetPasswordToken to userSchema
-//   this.resetPasswordToken = crypto
-//     .createHash("sha256")
-//     .update(resetToken)
-//     .digest("hex");
+  //  hashing and adding resetPasswordToken to userSchema
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
 
-//   this.resetPasswordTime = Date.now() + 15 * 60 * 1000;
+  this.resetPasswordTime = Date.now() + 15 * 60 * 1000;
 
-//   return resetToken;
-// };
+  return resetToken;
+};
 
 module.exports = mongoose.model("User", userSchema);
