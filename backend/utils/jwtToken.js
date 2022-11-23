@@ -1,11 +1,12 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
 const sendToken = (user, statusCode, res) => {
   const token = user.getJwtToken();
 
   // Options for cookies
   const options = {
-    expires: new Date(
-      Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-    ),
+    expires: new Date(Date.now() + 13 * 24 * 60 * 60 * 1000),
     httpOnly: true,
   };
 
