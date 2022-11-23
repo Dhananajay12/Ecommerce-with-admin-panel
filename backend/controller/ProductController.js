@@ -1,24 +1,34 @@
 const Product = require("../model/ProductSchema");
 const ErrorHandler = require("../utils/ErrorHandle");
+const asyncHandler = require("express-async-handler");
 
-const createProduct = async (req, res, next) => {
+const createProduct = asyncHandler(async (req, res, next) => {
   const product = await Product.create(req.body);
-
   res.status(201).json({
     success: true,
     product,
   });
-};
+});
 
-const getAllProducts = async (req, res) => {
-  const product = await Product.find();
+const getAllProducts = asyncHandler(async (req, res) => {
+  const keyword = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { description: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+
+  const product = await Product.find(keyword);
+
   res.status(200).json({
     success: true,
     product,
   });
-};
+});
 
-const updateProduct = async (req, res, next) => {
+const updateProduct = asyncHandler(async (req, res, next) => {
   let product = await Product.findById(req.params.id);
 
   if (!product) {
@@ -34,9 +44,9 @@ const updateProduct = async (req, res, next) => {
     success: true,
     product,
   });
-};
+});
 
-const deleteProduct = async (req, res, next) => {
+const deleteProduct = asyncHandler(async (req, res, next) => {
   let product = await Product.findById(req.params.id);
   if (!product) {
     return next(new ErrorHandler("product not found with this id ", 404));
@@ -47,9 +57,9 @@ const deleteProduct = async (req, res, next) => {
     success: true,
     message: "product delete successfully",
   });
-};
+});
 
-const getSingleProduct = async (req, res, next) => {
+const getSingleProduct = asyncHandler(async (req, res, next) => {
   let product = await Product.findById(req.params.id);
   if (!product) {
     return next(new ErrorHandler("product not found", 404));
@@ -58,7 +68,7 @@ const getSingleProduct = async (req, res, next) => {
     success: true,
     product,
   });
-};
+});
 
 module.exports = {
   getAllProducts,
