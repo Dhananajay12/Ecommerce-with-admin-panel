@@ -30,6 +30,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
     .filter()
     .pagination(resultPerPage);
   const products = await feature.query;
+
   res.status(200).json({
     success: true,
     products,
@@ -87,4 +88,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getSingleProduct,
+  getAdminProducts,
 };
