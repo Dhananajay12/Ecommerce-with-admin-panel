@@ -138,14 +138,14 @@ const resetPassword = AsyncHandler(async (req, res, next) => {
 });
 
 //  Get user Details
-// exports.userDetails = catchAsyncErrors(async (req, res, next) => {
-//   const user = await User.findById(req.user.id);
+const userDetails = AsyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
 
-//   res.status(200).json({
-//     success: true,
-//     user,
-//   });
-// });
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
 
 // Update User Password
 const updatePassword = AsyncHandler(async (req, res, next) => {
@@ -175,4 +175,5 @@ module.exports = {
   forgotPassword,
   updatePassword,
   resetPassword,
+  userDetails,
 };
