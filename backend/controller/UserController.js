@@ -7,19 +7,45 @@ const sendMail = require("../utils/sendMail");
 const crypto = require("crypto");
 
 const createUser = AsyncHandler(async (req, res, next) => {
-  const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-  const user = await User.create({
-    name,
-    email,
-    password,
-    avatar: {
-      public_id: "https://tes.com",
-      url: "https://tes.com",
-    },
-  });
+    let user = await User.findOne({ email });
+    if (user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
+    }
 
-  sendToken(user, 201, res);
+    user = await User.create({
+      name,
+      email,
+      password,
+      avatar: {
+        public_id: "https://tes.com",
+        url: "https://tes.com",
+      },
+    });
+    sendToken(user, 201, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.stack,
+    });
+  }
+  // const { name, email, password } = req.body;
+
+  // const user = await User.create({
+  //   name,
+  //   email,
+  //   password,
+  //   avatar: {
+  //       public_id: "https://tes.com",
+  //     url: "https://tes.com",
+  //   },
+  // });
+
+  // sendToken(user, 201, res);
 });
 
 const loginUser = AsyncHandler(async (req, res, next) => {
@@ -168,6 +194,23 @@ const updatePassword = AsyncHandler(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
+const updateProfile = AsyncHandler(async (req, res, next) => {
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+  };
+
+  const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  res.status(200).json({
+    success: true,
+  });
+});
+
 module.exports = {
   createUser,
   loginUser,
@@ -176,4 +219,5 @@ module.exports = {
   updatePassword,
   resetPassword,
   userDetails,
+  updateProfile,
 };

@@ -16,7 +16,6 @@ const isAuthenticatedUser = asyncHandler(async (req, res, next) => {
   req.user = await User.findById(decodedData.id);
 
   next();
-  ``;
 });
 
 // Admin Roles
