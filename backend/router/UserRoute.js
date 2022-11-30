@@ -26,9 +26,9 @@ router.route("/me/update/info").put(isAuthenticatedUser, updateProfile);
 router.route("/me").get(isAuthenticatedUser, userDetails);
 router
   .route("/admin/users")
-  .get(isAuthenticatedUser, authorizeRoles("admmin"), getAllUsers);
+  .get(isAuthenticatedUser, authorizeRoles("admin"), getAllUsers);
 router
   .route("/admin/users/:id")
-  .get(isAuthenticatedUser, authorizeRoles("admmin"), getSingleUser);
+  .get(isAuthenticatedUser, authorizeRoles("admin"), getSingleUser);
 
 module.exports = router;
