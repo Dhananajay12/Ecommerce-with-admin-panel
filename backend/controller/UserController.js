@@ -194,6 +194,8 @@ const updatePassword = AsyncHandler(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
+////update profile detail
+
 const updateProfile = AsyncHandler(async (req, res, next) => {
   const newUserData = {
     name: req.body.name,
@@ -211,6 +213,29 @@ const updateProfile = AsyncHandler(async (req, res, next) => {
   });
 });
 
+//Get single User Dtails ----admin
+const getAllUsers = AsyncHandler(async (req, res, next) => {
+  const users = await User.find();
+
+  res.status(200).json({
+    success: true,
+    users,
+  });
+});
+//Get single User Dtails ----admin
+const getSingleUser = AsyncHandler(async (req, res, next) => {
+  const users = await User.findById(req.params.id);
+
+  if (!users) {
+    return next(new ErrorHandler("User is not found with this id", 400));
+  }
+
+  res.status(200).json({
+    success: true,
+    users,
+  });
+});
+
 module.exports = {
   createUser,
   loginUser,
@@ -220,4 +245,6 @@ module.exports = {
   resetPassword,
   userDetails,
   updateProfile,
+  getAllUsers,
+  getSingleUser,
 };
