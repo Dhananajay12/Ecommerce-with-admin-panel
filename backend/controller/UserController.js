@@ -5,6 +5,7 @@ const ErrorHandler = require("../utils/ErrorHandle");
 const sendToken = require("../utils/jwtToken");
 const sendMail = require("../utils/sendMail");
 const crypto = require("crypto");
+const { nextTick } = require("process");
 
 const createUser = AsyncHandler(async (req, res, next) => {
   try {
@@ -236,6 +237,41 @@ const getSingleUser = AsyncHandler(async (req, res, next) => {
   });
 });
 
+/// update role ---admin
+const updateUserRole = AsyncHandler(async (req, res, next) => {
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+    role: req.body.role,
+  };
+
+  const users = await User.findByIdAndUpdate(req.params.id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  res.status(200).json({
+    success: true,
+    users,
+  });
+});
+
+const deleteUser = AsyncHandler(async (req, res, next) => {
+  const users = await User.findById(req.params.id);
+
+  if (!users) {
+    return next(new ErrorHandler("user is not found with this id", 4000));
+  }
+
+  await users.delete();
+
+  res.status(200).json({
+    success: true,
+    message: "user deleted successfully",
+  });
+});
+
 module.exports = {
   createUser,
   loginUser,
@@ -247,4 +283,6 @@ module.exports = {
   updateProfile,
   getAllUsers,
   getSingleUser,
+  updateUserRole,
+  deleteUser,
 };
